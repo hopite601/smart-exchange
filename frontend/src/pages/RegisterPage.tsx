@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import AuthLayout from "../layouts/AuthLayout";
 import TextInput from "../components/TextInput";
 import PrimaryButton from "../components/PrimaryButton";
@@ -13,6 +14,7 @@ interface Props {
 }
 
 const RegisterPage: React.FC<Props> = ({ lang, setLang }) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const [fullName, setFullName] = useState("");
@@ -23,48 +25,17 @@ const RegisterPage: React.FC<Props> = ({ lang, setLang }) => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const isJP = lang === "jp";
-
-  const title = isJP ? "登録" : "Đăng ký";
-  const nameLabel = isJP ? "氏名" : "Họ và tên";
-  const namePlaceholder = isJP ? "お名前を入力してください" : "Nhập họ và tên";
-  const emailLabel = isJP ? "メールアドレス" : "Email";
-  const emailPlaceholder = isJP
-    ? "メールアドレスを入力してください"
-    : "Nhập địa chỉ email";
-  const passLabel = isJP ? "パスワード" : "Mật khẩu";
-  const passPlaceholder = isJP
-    ? "パスワードを入力してください"
-    : "Nhập mật khẩu";
-  const passConfLabel = isJP ? "パスワード確認" : "Xác nhận mật khẩu";
-  const passConfPlaceholder = isJP
-    ? "もう一度パスワードを入力してください"
-    : "Nhập lại mật khẩu";
-  const submitText = isJP ? "登録" : "Đăng ký";
-  const googleText = isJP
-    ? "Googleで登録"
-    : "Đăng ký bằng Google";
-  const bottomText = isJP ? "すでにアカウントをお持ちですか？" : "Đã có tài khoản?";
-  const bottomLinkText = isJP ? "ログイン" : "Đăng nhập";
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
     if (!fullName || !email || !password || !passwordConfirm) {
-      setError(
-        isJP
-          ? "すべての項目を入力してください。"
-          : "Vui lòng điền đầy đủ thông tin."
-      );
+      setError(t("auth.register.errorMissing"));
       return;
     }
+
     if (password !== passwordConfirm) {
-      setError(
-        isJP
-          ? "パスワードと確認用パスワードが一致しません。"
-          : "Mật khẩu và xác nhận mật khẩu không trùng nhau."
-      );
+      setError(t("auth.register.errorPasswordMismatch"));
       return;
     }
 
@@ -77,23 +48,21 @@ const RegisterPage: React.FC<Props> = ({ lang, setLang }) => {
         body: JSON.stringify({
           fullName,
           email,
-          password,
-        }),
+          password
+        })
       });
 
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
         throw new Error(
-          data.message ||
-            (isJP ? "登録に失敗しました。" : "Đăng ký thất bại.")
+          data.message || t("auth.register.errorRegisterFailed")
         );
       }
 
       navigate("/login");
     } catch (err: any) {
       setError(
-        err.message ||
-          (isJP ? "エラーが発生しました。" : "Có lỗi xảy ra, vui lòng thử lại.")
+        err?.message || t("auth.register.errorGeneric")
       );
     } finally {
       setLoading(false);
@@ -101,61 +70,71 @@ const RegisterPage: React.FC<Props> = ({ lang, setLang }) => {
   };
 
   const handleGoogleRegister = () => {
-    window.location.href = "/api/auth/google"; // TODO: sửa cho đúng BE
+    // TODO: sửa cho đúng BE
+    window.location.href = "/api/auth/google";
   };
 
   return (
-    <AuthLayout title={title} lang={lang} onChangeLang={setLang}>
+    <AuthLayout
+      title={t("auth.register.title")}
+      lang={lang}
+      onChangeLang={setLang}
+    >
       {error && <div className="auth-error">{error}</div>}
 
       <form onSubmit={handleSubmit} className="auth-form">
         <TextInput
-          label={nameLabel}
+          label={t("auth.register.fullNameLabel")}
           type="text"
-          placeholder={namePlaceholder}
+          placeholder={t("auth.register.fullNamePlaceholder")}
           value={fullName}
           onChange={(e) => setFullName(e.target.value)}
         />
 
         <TextInput
-          label={emailLabel}
+          label={t("auth.register.emailLabel")}
           type="email"
-          placeholder={emailPlaceholder}
+          placeholder={t("auth.register.emailPlaceholder")}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
 
         <TextInput
-          label={passLabel}
+          label={t("auth.register.passwordLabel")}
           type="password"
-          placeholder={passPlaceholder}
+          placeholder={t("auth.register.passwordPlaceholder")}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
 
         <TextInput
-          label={passConfLabel}
+          label={t("auth.register.passwordConfirmLabel")}
           type="password"
-          placeholder={passConfPlaceholder}
+          placeholder={t("auth.register.passwordConfirmPlaceholder")}
           value={passwordConfirm}
           onChange={(e) => setPasswordConfirm(e.target.value)}
         />
 
         <PrimaryButton type="submit" disabled={loading}>
-          {loading ? (isJP ? "処理中..." : "Đang đăng ký...") : submitText}
+          {loading
+            ? t("auth.register.registerProcessing")
+            : t("auth.register.submit")}
         </PrimaryButton>
       </form>
 
       <button className="google-btn" onClick={handleGoogleRegister}>
-        <img src={googleLogo} alt="Google" className="google-icon" />
-        <span>{googleText}</span>
+        <img
+          src={googleLogo}
+          alt={t("auth.googleAlt")}
+          className="google-icon"
+        />
+        <span>{t("auth.register.google")}</span>
       </button>
 
-
       <div className="auth-bottom-text">
-        {bottomText}{" "}
+        {t("auth.register.bottomText")}{" "}
         <Link to="/login" className="link">
-          {bottomLinkText}
+          {t("auth.register.bottomLinkText")}
         </Link>
       </div>
     </AuthLayout>

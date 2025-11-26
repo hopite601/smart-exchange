@@ -1,12 +1,17 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
+import i18n from "./i18n";
 
 export type Lang = "vi" | "jp";
 
 function App() {
-  const [lang, setLang] = useState<Lang>("jp"); // mặc định JP, muốn thì đổi thành "vi"
+  const [lang, setLang] = useState<Lang>("jp"); // mặc định JP
+
+  useEffect(() => {
+    i18n.changeLanguage(lang);
+  }, [lang]);
 
   return (
     <BrowserRouter>
