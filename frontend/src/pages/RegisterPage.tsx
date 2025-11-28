@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import AuthLayout from "../layouts/AuthLayout";
 import TextInput from "../components/TextInput";
 import PrimaryButton from "../components/PrimaryButton";
+import { authService } from "../services/api";
 import type { Lang } from "../App";
 import googleLogo from "../assets/google-logo.png";
 
@@ -40,24 +41,13 @@ const RegisterPage: React.FC<Props> = ({ lang, setLang }) => {
 
         try {
             setLoading(true);
-            // TODO: gọi API đăng ký thật
-            const res = await fetch("/api/auth/register", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    fullName,
-                    email,
-                    password,
-                }),
+            await authService.register({
+                fullName,
+                email,
+                password,
             });
 
-            if (!res.ok) {
-                const data = await res.json().catch(() => ({}));
-                throw new Error(
-                    data.message || t("auth.register.errorRegisterFailed")
-                );
-            }
-
+            // Navigate to login page after successful registration
             navigate("/login");
         } catch (err: any) {
             setError(err?.message || t("auth.register.errorGeneric"));
@@ -67,16 +57,11 @@ const RegisterPage: React.FC<Props> = ({ lang, setLang }) => {
     };
 
     const handleGoogleRegister = () => {
-        // TODO: sửa cho đúng BE
-        window.location.href = "/api/auth/google";
+        //window.location.href = "/api/auth/google";
     };
 
     return (
-        <AuthLayout
-            title={t("auth.register.title")}
-            lang={lang}
-            onChangeLang={setLang}
-        >
+        <AuthLayout title={t("auth.register.title")} lang={lang} onChangeLang={setLang}>
             {error && <div className="auth-error">{error}</div>}
 
             <form onSubmit={handleSubmit} className="auth-form">
@@ -113,18 +98,12 @@ const RegisterPage: React.FC<Props> = ({ lang, setLang }) => {
                 />
 
                 <PrimaryButton type="submit" disabled={loading}>
-                    {loading
-                        ? t("auth.register.registerProcessing")
-                        : t("auth.register.submit")}
+                    {loading ? t("auth.register.registerProcessing") : t("auth.register.submit")}
                 </PrimaryButton>
             </form>
 
             <button className="google-btn" onClick={handleGoogleRegister}>
-                <img
-                    src={googleLogo}
-                    alt={t("auth.googleAlt")}
-                    className="google-icon"
-                />
+                <img src={googleLogo} alt={t("auth.googleAlt")} className="google-icon" />
                 <span>{t("auth.register.google")}</span>
             </button>
 

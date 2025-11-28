@@ -1,11 +1,13 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import AuthLayout from "../layouts/AuthLayout";
 import TextInput from "../components/TextInput";
 import PrimaryButton from "../components/PrimaryButton";
+import { authService } from "../services/api";
 import type { Lang } from "../App";
 import googleLogo from "../assets/google-logo.png";
+
 interface Props {
     lang: Lang;
     setLang: (lang: Lang) => void;
@@ -13,6 +15,7 @@ interface Props {
 
 const LoginPage: React.FC<Props> = ({ lang, setLang }) => {
     const { t } = useTranslation();
+    const navigate = useNavigate();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
@@ -30,8 +33,14 @@ const LoginPage: React.FC<Props> = ({ lang, setLang }) => {
 
         try {
             setLoading(true);
-            // TODO: gọi API login thật
-            console.log("Login with:", { email, password });
+            const result = await authService.login({ email, password });
+
+            // Store user settings in localStorage if needed
+            localStorage.setItem("user", JSON.stringify(result.user));
+            localStorage.setItem("settings", JSON.stringify(result.settings));
+
+            // Navigate to home/dashboard
+            navigate("/");
         } catch (err) {
             const error = err as Error;
             setError(error?.message || t("auth.login.errorLoginFailed"));
@@ -42,15 +51,11 @@ const LoginPage: React.FC<Props> = ({ lang, setLang }) => {
 
     const handleGoogleLogin = () => {
         // TODO: sửa URL theo backend
-        window.location.href = "/api/auth/google";
+        //window.location.href = "/api/auth/google";
     };
 
     return (
-        <AuthLayout
-            title={t("auth.login.title")}
-            lang={lang}
-            onChangeLang={setLang}
-        >
+        <AuthLayout title={t("auth.login.title")} lang={lang} onChangeLang={setLang}>
             {error && <div className="auth-error">{error}</div>}
 
             <form onSubmit={handleSubmit} className="auth-form">
@@ -71,18 +76,12 @@ const LoginPage: React.FC<Props> = ({ lang, setLang }) => {
                 />
 
                 <PrimaryButton type="submit" disabled={loading}>
-                    {loading
-                        ? t("auth.login.loginProcessing")
-                        : t("auth.login.submit")}
+                    {loading ? t("auth.login.loginProcessing") : t("auth.login.submit")}
                 </PrimaryButton>
             </form>
 
             <button className="google-btn" onClick={handleGoogleLogin}>
-                <img
-                    src={googleLogo}
-                    alt={t("auth.googleAlt")}
-                    className="google-icon"
-                />
+                <img src={googleLogo} alt={t("auth.googleAlt")} className="google-icon" />
                 <span>{t("auth.login.google")}</span>
             </button>
 

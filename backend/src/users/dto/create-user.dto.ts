@@ -8,9 +8,12 @@ export class CreateUserDto {
     @MinLength(8)
     password: string;
 
+    @IsString()
+    fullName: string;
+
     @IsOptional()
     @IsString()
-    job_title?: string;
+    jobTitle?: string;
 
     @IsOptional()
     @IsString()
@@ -20,5 +23,5 @@ export class CreateUserDto {
     @IsOptional()
     @IsString()
     @IsIn(["light", "dark"])
-    theme_mode?: string;
+    themeMode?: string;
 }

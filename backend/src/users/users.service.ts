@@ -24,10 +24,10 @@ export class UsersService {
             data: {
                 email: createUserDto.email,
                 password: hashedPassword,
-                fullName: createUserDto.email.split("@")[0],
-                jobTitle: createUserDto.job_title,
-                languageCode: createUserDto.language || "vi",
-                themeMode: createUserDto.theme_mode || "light",
+                fullName: createUserDto.fullName || createUserDto.email.split("@")[0],
+                jobTitle: createUserDto.jobTitle || null,
+                languageCode: "vi",
+                themeMode: "light",
             },
         });
 
@@ -77,9 +77,9 @@ export class UsersService {
         if (updateUserDto.email) data.email = updateUserDto.email;
         if (updateUserDto.password)
             data.password = await BcryptSecurity.hashPassword(updateUserDto.password);
-        if (updateUserDto.job_title !== undefined) data.jobTitle = updateUserDto.job_title;
+        if (updateUserDto.jobTitle !== undefined) data.jobTitle = updateUserDto.jobTitle;
         if (updateUserDto.language !== undefined) data.languageCode = updateUserDto.language;
-        if (updateUserDto.theme_mode !== undefined) data.themeMode = updateUserDto.theme_mode;
+        if (updateUserDto.themeMode !== undefined) data.themeMode = updateUserDto.themeMode;
 
         const updatedUser = await this.prisma.user.update({
             where: { userId: user_id },

@@ -4,11 +4,18 @@ import { ValidationPipe } from "@nestjs/common";
 import { ResponseInterceptor } from "./common/interceptors/response.interceptor";
 import { AllExceptionsFilter } from "./common/filters/all-exception.filter";
 import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
+import * as cookieParser from "cookie-parser";
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
     app.setGlobalPrefix("api");
-    app.enableCors();
+
+    app.enableCors({
+        origin: process.env.FRONTEND_URL,
+        credentials: true,
+    });
+
+    app.use(cookieParser());
 
     app.useGlobalPipes(
         new ValidationPipe({

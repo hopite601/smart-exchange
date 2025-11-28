@@ -22,7 +22,7 @@ export class AuthService {
     async login(loginDto: LoginDto) {
         const user = await this.usersService.findByEmail(loginDto.email);
         if (!user) {
-            throw new AppException(ExceptionCode.UNAUTHORIZED);
+            throw new AppException(ExceptionCode.USER_NOT_FOUND);
         }
 
         const isMatch = await BcryptSecurity.comparePassword(loginDto.password, user.password);
@@ -51,13 +51,6 @@ export class AuthService {
 
     // Logout method (Vinh's task)
     logout() {
-        // In a production environment, you would:
-        // 1. Add token to a blacklist (Redis/database)
-        // 2. Clear any server-side sessions
-        // 3. Log the logout action for audit trail
-
-        // For now, we just return success
-        // The actual token invalidation happens on the client side
         return {
             message: "Logout successful",
         };

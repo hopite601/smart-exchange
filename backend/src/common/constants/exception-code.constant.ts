@@ -9,6 +9,7 @@ export const ExceptionCode = {
     INTERNAL_SERVER_ERROR: { code: 1007, msg: "Internal server error", status: 500 },
 
     INVALID_PASSWORD: { code: 1008, msg: "Password is incorrect", status: 401 },
+    USER_NOT_FOUND: { code: 1010, msg: "User not found", status: 404 },
     ACCESS_DENIED: { code: 1009, msg: "Access denied", status: 403 },
     TOKEN_FAILED: { code: 4000, msg: "Token validation failed", status: 401 },
     HASHING_FAILED: { code: 4001, msg: "Hashing failed", status: 500 },
