@@ -1,40 +1,19 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { authService } from "~/services/api";
+import React from "react";
+import { useAuth } from "../contexts/AuthContext";
 
 const HomePage: React.FC = () => {
-    const navigate = useNavigate();
-    const [user, setUser] = useState<any>(null);
-    const [loading, setLoading] = useState(false);
-
-    useEffect(() => {
-        const storedUser = localStorage.getItem("user");
-        if (storedUser) {
-            setUser(JSON.parse(storedUser));
-        } else {
-            navigate("/login");
-        }
-    }, [navigate]);
+    const { user, logout } = useAuth();
+    const [loading, setLoading] = React.useState(false);
 
     const handleLogout = async () => {
-        try {
-            setLoading(true);
-            await authService.logout();
-
-            localStorage.removeItem("user");
-            localStorage.removeItem("settings");
-
-            navigate("/login");
-        } catch (error) {
-            console.error("Logout failed:", error);
-        } finally {
-            setLoading(false);
-        }
+        setLoading(true);
+        await logout();
+        setLoading(false);
     };
 
-    if (!user) {
-        return <div>Loading...</div>;
-    }
+    const settings = localStorage.getItem("settings")
+        ? JSON.parse(localStorage.getItem("settings") || "{}")
+        : null;
 
     return (
         <div style={{ padding: "2rem" }}>
@@ -44,22 +23,16 @@ const HomePage: React.FC = () => {
             <h1>Welcome to Smart Exchange</h1>
             <div style={{ marginTop: "1rem" }}>
                 <p>
-                    <strong>Email:</strong> {user.email}
+                    <strong>Email:</strong> {user?.email}
                 </p>
                 <p>
-                    <strong>Job Title:</strong> {user.jobTitle || "N/A"}
+                    <strong>Job Title:</strong> {user?.jobTitle || "N/A"}
                 </p>
                 <p>
-                    <strong>Language:</strong>{" "}
-                    {localStorage.getItem("settings")
-                        ? JSON.parse(localStorage.getItem("settings") || "{}").language
-                        : "N/A"}
+                    <strong>Language:</strong> {settings?.language || "N/A"}
                 </p>
                 <p>
-                    <strong>Theme:</strong>{" "}
-                    {localStorage.getItem("settings")
-                        ? JSON.parse(localStorage.getItem("settings") || "{}").theme
-                        : "N/A"}
+                    <strong>Theme:</strong> {settings?.theme || "N/A"}
                 </p>
             </div>
             <button
