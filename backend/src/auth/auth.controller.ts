@@ -22,9 +22,9 @@ export class AuthController {
 
         res.cookie("access_token", result.token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production", // true in production (HTTPS only)
+            secure: process.env.NODE_ENV === "production",
             sameSite: "lax",
-            maxAge: jwtExpiration * 1000, // Convert seconds to milliseconds
+            maxAge: jwtExpiration * 1000,
         });
 
         return {

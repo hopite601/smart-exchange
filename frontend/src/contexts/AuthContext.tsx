@@ -12,6 +12,7 @@ interface User {
 interface AuthContextType {
     user: User | null;
     loading: boolean;
+    setUser: (user: User | null) => void;
     logout: () => Promise<void>;
 }
 
@@ -34,6 +35,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 const currentUser = await userService.getCurrentUser();
                 setUser(currentUser);
             } catch (error) {
+                console.error("AuthContext - verification failed:", error);
                 localStorage.removeItem("user");
                 localStorage.removeItem("settings");
                 setUser(null);
@@ -59,7 +61,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ user, loading, logout }}>{children}</AuthContext.Provider>
+        <AuthContext.Provider value={{ user, loading, setUser, logout }}>
+            {children}
+        </AuthContext.Provider>
     );
 };
 

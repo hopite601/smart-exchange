@@ -5,6 +5,7 @@ import HomePage from "./pages/HomePage";
 import { LanguageProvider } from "./contexts/LanguageContext";
 import { AuthProvider } from "./contexts/AuthContext";
 import { ProtectedLayout } from "./layouts/ProtectedLayout";
+import { PublicRoute } from "./components/PublicRoute";
 
 function App() {
     return (
@@ -13,8 +14,10 @@ function App() {
                 <LanguageProvider>
                     <Routes>
                         {/* Public Routes */}
-                        <Route path="/login" element={<LoginPage />} />
-                        <Route path="/register" element={<RegisterPage />} />
+                        <Route element={<PublicRoute />}>
+                            <Route path="/login" element={<LoginPage />} />
+                            <Route path="/register" element={<RegisterPage />} />
+                        </Route>
 
                         {/* Protected Routes */}
                         <Route element={<ProtectedLayout />}>

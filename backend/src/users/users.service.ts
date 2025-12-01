@@ -31,15 +31,12 @@ export class UsersService {
             },
         });
 
-        return { message: "User created", data: this.serialize(user) };
+        return this.serialize(user);
     }
 
     async findAll() {
         const users = await this.prisma.user.findMany();
-        return {
-            message: "Users fetched",
-            data: users.map((user) => this.serialize(user)),
-        };
+        return users.map((user) => this.serialize(user));
     }
 
     async findOne(user_id: string) {
@@ -49,7 +46,7 @@ export class UsersService {
         if (!user) {
             throw new AppException(ExceptionCode.NOT_FOUND, "User not found");
         }
-        return { message: "User fetched", data: this.serialize(user) };
+        return this.serialize(user);
     }
 
     async findByEmail(email: string) {
@@ -86,7 +83,7 @@ export class UsersService {
             data,
         });
 
-        return { message: "User updated", data: this.serialize(updatedUser) };
+        return this.serialize(updatedUser);
     }
 
     async remove(user_id: string) {
@@ -97,7 +94,7 @@ export class UsersService {
             throw new AppException(ExceptionCode.NOT_FOUND, "User not found");
         }
         await this.prisma.user.delete({ where: { userId: user_id } });
-        return { message: "User deleted", data: { user_id } };
+        return { user_id };
     }
 
     private serialize(user: any) {

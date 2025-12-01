@@ -5,11 +5,13 @@ import AuthLayout from "../layouts/AuthLayout";
 import TextInput from "../components/TextInput";
 import PrimaryButton from "../components/PrimaryButton";
 import { authService } from "~/services/api";
+import { useAuth } from "../contexts/AuthContext";
 import googleLogo from "../assets/google-logo.png";
 
 const LoginPage: React.FC = () => {
     const { t } = useTranslation();
     const navigate = useNavigate();
+    const { setUser } = useAuth();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
@@ -29,13 +31,13 @@ const LoginPage: React.FC = () => {
             setLoading(true);
             const result = await authService.login({ email, password });
 
-            // Store user settings in localStorage if needed
             localStorage.setItem("user", JSON.stringify(result.user));
             localStorage.setItem("settings", JSON.stringify(result.settings));
 
-            // Navigate to home/dashboard
+            setUser(result.user);
             navigate("/");
         } catch (err) {
+            console.error("Login error:", err);
             const error = err as Error;
             setError(error?.message || t("auth.login.errorLoginFailed"));
         } finally {

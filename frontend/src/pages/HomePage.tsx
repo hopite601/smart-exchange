@@ -5,6 +5,8 @@ const HomePage: React.FC = () => {
     const { user, logout } = useAuth();
     const [loading, setLoading] = React.useState(false);
 
+    console.log("HomePage - user:", user);
+
     const handleLogout = async () => {
         setLoading(true);
         await logout();

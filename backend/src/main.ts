@@ -10,8 +10,19 @@ async function bootstrap() {
     const app = await NestFactory.create(AppModule);
     app.setGlobalPrefix("api");
 
+    const frontendUrls = process.env.FRONTEND_URL?.split(";").map((url) => url.trim());
+    console.log("Allowed frontend URLs for CORS:" + frontendUrls);
+
     app.enableCors({
-        origin: process.env.FRONTEND_URL,
+        origin: (origin, callback) => {
+            const allowedOrigins = frontendUrls || [];
+
+            if (!origin || allowedOrigins.includes(origin)) {
+                callback(null, true);
+            } else {
+                callback(new Error("Not allowed by CORS"), false);
+            }
+        },
         credentials: true,
     });
 

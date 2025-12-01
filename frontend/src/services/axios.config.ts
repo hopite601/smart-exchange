@@ -8,6 +8,7 @@ export const axiosInstance = axios.create({
     headers: {
         "Content-Type": "application/json",
     },
+    timeout: 5000,
 });
 
 axiosInstance.interceptors.response.use(
@@ -15,6 +16,7 @@ axiosInstance.interceptors.response.use(
         return response.data.data;
     },
     (error) => {
+        console.error("Axios interceptor - Error:", error.response?.data);
         const message = error.response?.data?.data?.message || error.message;
         throw new Error(message);
     }

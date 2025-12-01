@@ -16,7 +16,7 @@ export class AuthService {
 
     async register(registerDto: RegisterDto) {
         await this.usersService.create(registerDto);
-        return { message: "Registered successfully. Please login.", data: null };
+        return { message: "Registration successful" };
     }
 
     async login(loginDto: LoginDto) {
